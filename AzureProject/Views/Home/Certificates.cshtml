@@ -1,0 +1,52 @@
+﻿@model AzureProject.Models.CertificatesViewModel
+
+@{
+    ViewBag.Title = "Certificates";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Certificates</h2>
+
+<p>
+    @using (Html.BeginForm("ExportToExcel", "Home", FormMethod.Post))
+    {
+        <input type="submit" value="Export to Excel" />
+    }
+</p>
+<p>
+    @Html.ActionLink("Convert View To PDF", "PrintViewToPdf")
+</p>
+<p>
+    @Html.ActionLink("Convert View Word", "ExportToWord")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Certifiction
+        </th>
+        <th>
+            Description
+        </th>
+        <th>
+            Points
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Certifications)
+    {
+        <tr>
+            <td>
+                @item.Code
+            </td>
+            <td>
+                @item.Description
+            </td>
+            <td>
+                @item.Points
+            </td>
+
+        </tr>
+    }
+
+</table>

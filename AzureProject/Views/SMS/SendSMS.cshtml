@@ -1,0 +1,15 @@
+﻿
+@{
+    ViewBag.Title = "SendSMS";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Send", "SMS"))
+{
+<input type="text" name="message" placeholder="Send message" />
+
+<input type="text" name="phone" placeholder="Enter Number" />
+
+<input type="submit" value="Send" />
+}
+

@@ -1,0 +1,123 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ExportExcel;
+
+namespace NugetTest
+{
+    [Serializable]
+    public class UserData
+    {
+        public UserData() { }
+
+        public string Avatar120 { get; set; }
+        public string Avatar30 { get; set; }
+        public string Avatar60 { get; set; }
+        public string Birthday { get; set; }
+        public int Bound { get; set; }
+        public string cityid { get; set; }
+        public string cityname { get; set; }
+        public string Email { get; set; }
+        public int EmailBound { get; set; }
+        public int Gender { get; set; }
+        public string mobile { get; set; }
+        public int provinceid { get; set; }
+        public string provincename { get; set; }
+        public string RealName { get; set; }
+        public string ShowName { get; set; }
+        public string Telephone { get; set; }
+        public long userid { get; set; }
+        public string username { get; set; }
+    }
+    public class UserDataTemplate
+    {
+        public static void Test()
+        {
+            List<UserData> tmp = new List<UserData>();
+            for (int i = 0; i <= 100000; i++)
+            {
+                tmp.Add(new UserData { userid = i, username = i.ToString(), Gender = 1, provincename = "zg", cityname = "city", mobile = "18410005970", Birthday = "2017" });
+            }
+            UserDataTemplate template = new UserDataTemplate();
+            var dt = template.CreateTemplateTable();
+            template.ExportUserInfo(tmp, dt);
+        }
+        public DataTable CreateTemplateTable()
+        {
+            DataTable dt = new DataTable("cart");
+            DataColumn dc0 = new DataColumn("userid", Type.GetType("System.String"));
+            DataColumn dc1 = new DataColumn("username", Type.GetType("System.String"));
+            DataColumn dc2 = new DataColumn("gender", Type.GetType("System.String"));
+            DataColumn dc3 = new DataColumn("provincename", Type.GetType("System.String"));
+            DataColumn dc4 = new DataColumn("cityname", Type.GetType("System.String"));
+            DataColumn dc5 = new DataColumn("mobile", Type.GetType("System.String"));
+            DataColumn dc6 = new DataColumn("Birthday", Type.GetType("System.String"));
+            dt.Columns.Add(dc0);
+            dt.Columns.Add(dc1);
+            dt.Columns.Add(dc2);
+            dt.Columns.Add(dc3);
+            dt.Columns.Add(dc4);
+            dt.Columns.Add(dc5);
+            dt.Columns.Add(dc6);
+
+            return dt;
+        }
+        public void ExportUserInfo(List<UserData> listUserData, DataTable dt)
+        {
+            foreach (UserData ud in listUserData)
+            {
+                try
+                {
+                    DataRow dr = dt.NewRow();
+                    dr["userid"] = ud.userid;
+                    dr["username"] = ud.username ?? "";
+                    var gender = "";
+                    if (ud.Gender == 1)
+                        gender = "男";
+                    else if (ud.Gender == 0)
+                    {
+                        gender = "女";
+                    }
+                    else
+                    {
+                        gender = "未知";
+                    }
+                    dr["gender"] = gender;
+                    dr["provincename"] = ud.provincename ?? "";
+                    dr["cityname"] = ud.cityname ?? "";
+                    dr["mobile"] = ud.mobile ?? "";
+                    dr["Birthday"] = ud.Birthday ?? "";
+                    dt.Rows.Add(dr);
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine("添加Excel时出错：" + ex);
+                }
+            }
+            List<Tuple<string, string, int>> excels = new List<Tuple<string, string, int>>();
+            excels.Add(new Tuple<string, string, int>("userid", "userid", 20));
+            excels.Add(new Tuple<string, string, int>("用户名", "username", 20));
+            excels.Add(new Tuple<string, string, int>("性别", "gender", 20));
+            excels.Add(new Tuple<string, string, int>("省", "provincename", 20));
+            excels.Add(new Tuple<string, string, int>("市", "cityname", 20));
+            excels.Add(new Tuple<string, string, int>("生日", "Birthday", 40));
+            excels.Add(new Tuple<string, string, int>("手机", "mobile", 30));
+
+            var ms = ExportExcel.ExportExcel.ExportToExcel2007(dt, excels, "订单用户信息表", null, null);
+            var path = AppDomain.CurrentDomain.BaseDirectory;
+            using (var file = new FileStream(path + DateTime.Now.ToString("yyyy-MM-dd") + "订单用户信息表" + Guid.NewGuid() + ".xlsx", FileMode.Create))
+            {
+                ms.WriteTo(file);
+                ms.Flush();
+                //  ms.AllowClose = true;
+                //ms.Dispose();
+            }
+
+        }
+
+    }
+}
